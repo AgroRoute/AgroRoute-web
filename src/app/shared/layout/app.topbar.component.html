@@ -1,0 +1,20 @@
+<div class="layout-topbar">
+  <button
+    #menubutton
+    class="p-link layout-topbar-button"
+    (click)="layoutService.onMenuToggle()"
+  >
+    <i class="pi pi-bars"></i>
+  </button>
+  <a class="layout-topbar-logo">
+    <img src="assets\images\Logo.png" style="min-height: 60px;"/>
+    <span class="font-medium" style="color: #747475;">AgroRoute</span>
+  </a>
+
+  <div #topbarmenu class="layout-topbar-menu">
+    <button class="p-link layout-topbar-button" (click)="signOut()">
+      <i class="pi pi-sign-out"></i>
+      <span>Calendar</span>
+    </button>
+  </div>
+</div>
