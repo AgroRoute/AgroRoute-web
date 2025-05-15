@@ -1,0 +1,111 @@
+<div
+  class="flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden"
+>
+  <div class="grid w-full" style="max-width: 1200px">
+    <div class="col-12 md:col-6 p-4">
+      <div class="mb-5">
+        <div class="flex align-items-center">
+          <img
+            src="assets/images/Logo.png"
+            alt="AgroRoute logo"
+            style="width: 60px; height: auto"
+          />
+          <span class="ml-2 text-2xl font-medium" style="color: #098157">AgroRoute</span>
+        </div>
+        <h1 class="text-900 text-ml font-medium mt-4 mb-3">Login</h1>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="mt-4">
+        <div class="mb-4">
+          <label for="email" class="block text-700 mb-2">Email</label>
+          <input
+            id="email"
+            type="email"
+            placeholder="tucorreo@empresa.com"
+            pInputText
+            formControlName="email"
+            class="w-full p-3"
+          />
+          <small
+              *ngIf="
+                form.get('email')?.touched &&
+                form.get('email')?.hasError('required')
+              "
+              class="p-error"
+            >
+              El campo es obligatorio.
+            </small>
+        </div>
+
+        <div class="mb-4">
+          <label for="password" class="block text-700 mb-2">Contraseña</label>
+          <p-password
+            id="password"
+            formControlName="password"
+            [feedback]="false"
+            [toggleMask]="true"
+            styleClass="w-full"
+          ></p-password>
+           <small
+              *ngIf="
+                form.get('password')?.touched &&
+                form.get('password')?.hasError('required')
+              "
+              class="p-error"
+            >
+              El campo es obligatorio.
+            </small>
+        </div>
+
+        <div class="flex justify-content-between align-items-center mb-5">
+          <div class="flex align-items-center">
+            <p-checkbox id="rememberme" [binary]="true" styleClass="mr-2"></p-checkbox>
+            <label for="rememberme" class="text-sm">Recuerdame</label>
+          </div>
+          <a class="text-sm cursor-pointer text-color-secondary">Olvidaste tu contraseña?</a>
+        </div>
+
+        <button 
+          pButton 
+          pRipple 
+          label="Iniciar sesión" 
+          class="w-full p-3 mb-4"
+          style="background-color: #6366F1"
+        ></button>
+
+        <div class="text-center mt-3 mb-4">
+          <span class="text-sm">¿No tienes una cuenta? </span>
+          <a routerLink="/auth/register" class="text-sm font-medium cursor-pointer" style="color: #6366F1">Regístrate</a>
+        </div>
+
+        <div class="flex align-items-center justify-content-center my-4">
+          <div style="height: 1px; background-color: #e0e0e0; width: 40%"></div>
+          <span class="mx-2 text-500 text-sm">O</span>
+          <div style="height: 1px; background-color: #e0e0e0; width: 40%"></div>
+        </div>
+
+        <button 
+          pButton 
+          pRipple 
+          type="button"
+          class="w-full p-3 flex justify-content-center align-items-center border-1 border-300"
+          style="background-color: white; color: #333"
+        >
+          <i class="pi pi-google mr-2" style="font-size: 1.2rem"></i>
+          <span>Continuar con Google</span>
+        </button>
+      </form>
+    </div>
+
+    <div
+      class="hidden md:flex md:col-6 align-items-center justify-content-center p-4"
+    >
+      <img
+        src="assets/images/login-right-image.png"
+        alt="AgroRoute Delivery"
+        class="w-full"
+        style="max-height: 660px;"
+      />
+    </div>
+  </div>
+</div>
