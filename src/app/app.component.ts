@@ -1,15 +1,17 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { PrimeNGConfig } from 'primeng/api';
+import { MessageService, PrimeNGConfig } from 'primeng/api';
 import { LayoutService } from './shared/layout/service/app.layout.service';
 import { AppLayoutModule } from './shared/layout/app.layout.module';
+import { ToastModule } from 'primeng/toast';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
-  imports: [RouterOutlet, AppLayoutModule],
+  imports: [RouterOutlet, AppLayoutModule, ToastModule],
+  providers: [MessageService],
 })
 export class AppComponent implements OnInit {
   private primengConfig: PrimeNGConfig = inject(PrimeNGConfig);

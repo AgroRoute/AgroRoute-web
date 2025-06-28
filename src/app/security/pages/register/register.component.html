@@ -1,3 +1,5 @@
+<app-loading-spinner [isLoading]="isLoading"></app-loading-spinner>
+
 <div
   class="flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden"
 >
@@ -91,24 +93,24 @@
             </small>
           </div>
           <div class="col-12 md:col-6 mb-2">
-            <label for="phoneNumber" class="block text-700 mb-2"
-              >Telefono</label
+            <label for="birthDate" class="block text-700 mb-2"
+              >Fecha de nacimiento</label
             >
             <input
-              id="phoneNumber"
-              type="tel"
+              id="birthDate"
+              type="date"
               pInputText
-              formControlName="phoneNumber"
+              formControlName="birthDate"
               class="w-full p-3"
             />
             <small
               *ngIf="
-                form.get('phoneNumber')?.touched &&
-                form.get('phoneNumber')?.hasError('required')
+                form.get('birthDate')?.touched &&
+                form.get('birthDate')?.hasError('required')
               "
               class="p-error"
             >
-              El telefono es obligatorio.
+              La fecha de nacimiento es obligatoria.
             </small>
           </div>
           <div class="col-12 mb-2">

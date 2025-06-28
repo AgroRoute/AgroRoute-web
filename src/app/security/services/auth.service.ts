@@ -1,14 +1,16 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
-import { Observable } from 'rxjs';
 import { LoginReq } from '../models/login-req';
 import { RegisterReq } from '../models/register-req';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
+  private _router = inject(Router);
   private _http = inject(HttpClient);
 
   httpOptions = {
@@ -21,22 +23,24 @@ export class AuthService {
     return !!localStorage.getItem('authToken');
   }
 
-  login(req: LoginReq): Observable<void> {
-    return this._http.post<void>(
+  login(req: LoginReq): Observable<any> {
+    return this._http.post(
       `${environment.serverBasePath}/auth/sign-in`,
-      req
+      req,
+      this.httpOptions
     );
   }
 
-  register(req: RegisterReq): Observable<void> {
-    return this._http.post<void>(
+  register(req: RegisterReq): Observable<any> {
+    return this._http.post(
       `${environment.serverBasePath}/auth/sign-up`,
-      req
+      req,
+      this.httpOptions
     );
   }
 
-  logout(): boolean {
+  logout(): void {
     localStorage.removeItem('authToken');
-    return true;
+    this._router.navigate(['/auth/login']);
   }
 }

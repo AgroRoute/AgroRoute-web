@@ -14,6 +14,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { AuthService } from '../../services/auth.service';
 import { Router, RouterLink } from '@angular/router';
+import { SharedModule } from '../../../shared/shared.module';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-login',
@@ -28,6 +30,7 @@ import { Router, RouterLink } from '@angular/router';
     ReactiveFormsModule,
     FloatLabelModule,
     RouterLink,
+    SharedModule, 
   ],
 
   templateUrl: './login.component.html',
@@ -56,23 +59,37 @@ export class LoginComponent {
   private _fb: FormBuilder = inject(FormBuilder);
   private _router = inject(Router);
   private _authService: AuthService = inject(AuthService);
+  private _messageService: MessageService = inject(MessageService);
+
+  isLoading: boolean = false;
 
   form: FormGroup = this._fb.group({
-    email: ['', Validators.required],
+    email: ['', [Validators.required, Validators.email]],
     password: ['', Validators.required],
   });
 
   onSubmit(): void {
     if (this.form.valid) {
+      this.isLoading = true;
       const credentials = this.form.getRawValue();
       this._authService.login(credentials).subscribe({
-        next: (data: any) => {
-          localStorage.setItem('authToken', data.token);
-          this._router.navigate(['app']);
+        next: (response) => {
+          this.isLoading = false;
+          localStorage.setItem('authToken', response.token);
+          this._router.navigate(['/dashboard']);
+          this._messageService.add({
+            severity: 'success',
+            summary: 'Inicio de sesión exitoso',
+            detail: 'Bienvenido a AgroRoute',
+          });
         },
-        complete: () => {},
         error: (err) => {
-          console.log(err);
+          this.isLoading = false;
+          this._messageService.add({
+            severity: 'error',
+            summary: 'Error al iniciar sesión',
+            detail: err.error?.message || 'Ocurrió un error inesperado',
+          });
         },
       });
     } else {

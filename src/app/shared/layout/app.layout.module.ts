@@ -10,7 +10,6 @@ import { RippleModule } from 'primeng/ripple';
 import { AppMenuComponent } from './app.menu.component';
 import { AppMenuitemComponent } from './app.menuitem.component';
 import { AppTopBarComponent } from './app.topbar.component';
-
 import { RouterModule } from '@angular/router';
 import { AppSidebarComponent } from './app.sidebar.component';
 import { AppLayoutComponent } from './app.layout.component';
