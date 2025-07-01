@@ -76,7 +76,7 @@ export class LoginComponent {
         next: (response) => {
           this.isLoading = false;
           localStorage.setItem('authToken', response.token);
-          this._router.navigate(['/dashboard']);
+          this._router.navigate(['/app']);
           this._messageService.add({
             severity: 'success',
             summary: 'Inicio de sesión exitoso',

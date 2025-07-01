@@ -1,0 +1,320 @@
+<app-loading-spinner [isLoading]="isLoading"></app-loading-spinner>
+<div class="grid nested-grid full">
+  <div class="col-12 md:col-5">
+    <div class="card h-full">
+      <h4 class="font-bold">Dispositivos IoT</h4>
+      <p>Gestión de dispositivos IoT</p>
+      <p-dataView
+        #dv
+        [value]="iotDevices()"
+        [paginator]="true"
+        [rows]="4"
+        [loading]="isLoading"
+        filterBy="macAddress"
+      >
+        <ng-template pTemplate="header">
+          <div
+            class="grid grid-nogutter flex-column md:flex-row justify-content-between"
+          >
+            <span class="p-input-icon-left mb-2 md:mb-0 w-7">
+              <i class="pi pi-search"></i>
+              <input
+                type="search"
+                pInputText
+                class="w-full"
+                placeholder="Buscar por MAC"
+                (input)="onFilter(dv, $event)"
+              />
+            </span>
+            <p-button
+              label="Agregar"
+              icon="pi pi-plus"
+              (onClick)="openAddDialog()"
+            ></p-button>
+          </div>
+        </ng-template>
+
+        <ng-template let-devices pTemplate="listItem">
+          <div class="grid grid-nogutter mt-2">
+            <div class="col-12">
+              @for (device of devices; track device.id) {
+              <div
+                class="flex flex-row p-3 shadow-1 mb-3 align-items-center hover:surface-100"
+                style="cursor: pointer"
+                (click)="onDeviceSelect({ data: device })"
+              >
+                <div>
+                  <img
+                    src="assets/images/Iot-platform.png"
+                    alt=""
+                    class="h-5rem"
+                  />
+                </div>
+                <div class="ml-3">
+                  <span>#{{ device.id.substring(0, 8) }}</span>
+                  <p class="font-bold mb-1">MAC: {{ device.macAddress }}</p>
+                  <p class="mb-1">
+                    Estado:
+                    <span
+                      [class]="'ml-1 device-badge status-' + device.status"
+                      style="font-size: 0.75rem"
+                      >{{ device.status | enumLabel : DeviceStatus }}
+                    </span>
+                  </p>
+                  <p class="mb-1">
+                    Estado de Uso:
+                    <span
+                      [class]="'ml-1 device-badge status-' + device.usageStatus"
+                      style="font-size: 0.75rem"
+                      >{{
+                        device.usageStatus | enumLabel : DeviceUsageStatus
+                      }}</span
+                    >
+                  </p>
+                </div>
+              </div>
+              }
+            </div>
+          </div>
+        </ng-template>
+      </p-dataView>
+    </div>
+  </div>
+
+  <!-- Parte que muestra la información del dispositivo -->
+  <div class="col-12 md:col-7">
+    <div class="card w-full">
+      @if (selectedDevice) {
+      <div class="flex flex-row justify-content-between align-items-center">
+        <div class="">
+          <h4 class="font-bold mb-1">
+            ID #{{ selectedDevice.id.substring(0, 8) }}
+          </h4>
+          <p class="mb-3">MAC Address: {{ selectedDevice.macAddress }}</p>
+        </div>
+        <span
+          [class]="'device-badge status-' + selectedDevice.status"
+          style="font-size: 1.25rem"
+          >{{ selectedDevice.status | enumLabel : DeviceStatus }}</span
+        >
+      </div>
+
+      <p class="text-lg font-bold mb-3">Configuración del Dispositivo</p>
+      <div class="p-card p-3 surface-50 border-round mb-4">
+        <div class="grid">
+          <div class="col-12 md:col-6">
+            <div class="field">
+              <label class="font-bold block mb-2">Estado del Dispositivo</label>
+              <div class="flex flex-column">
+                <div class="mb-2">
+                  <span class="p-2 surface-100 border-round font-bold">
+                    {{ selectedDevice.status | enumLabel : DeviceStatus }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 md:col-6">
+            <div class="field">
+              <label class="font-bold block mb-2">Estado de Uso</label>
+              <div class="flex align-items-center">
+                <span class="p-2 surface-100 border-round">
+                  {{
+                    selectedDevice.usageStatus | enumLabel : DeviceUsageStatus
+                  }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-lg font-bold mb-3">Lecturas en Tiempo Real</p>
+      <div class="p-card p-3 surface-50 border-round mb-4 sensor-readings">
+        <div class="grid">
+          <div class="col-12 md:col-6">
+            <div class="sensor-card temperature">
+              <div class="sensor-icon">
+                <span class="material-symbols-outlined">device_thermostat</span>
+              </div>
+              <div class="sensor-info">
+                <p class="sensor-label">Temperatura</p>
+                <p class="sensor-value">
+                  {{ selectedDevice.temperatureValue || "--" }}°C
+                </p>
+                <div class="sensor-indicator"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 md:col-6">
+            <div class="sensor-card humidity">
+              <div class="sensor-icon">
+                <span class="material-symbols-outlined">dew_point</span>
+              </div>
+              <div class="sensor-info">
+                <p class="sensor-label">Humedad</p>
+                <p class="sensor-value">
+                  {{ selectedDevice.humidityValue || "--" }}%
+                </p>
+                <div class="sensor-indicator"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-lg font-bold mb-3">Relación con paquetes</p>
+      <div class="p-card p-3 surface-50 border-round mb-4">
+        <div class="flex justify-content-between align-items-start mb-3">
+          <div>
+            <p class="font-bold mb-1">Estado de Asignación</p>
+            <p class="text-sm">
+              <span
+                [class]="'device-badge status-' + selectedDevice.usageStatus"
+              >
+                {{ selectedDevice.usageStatus | enumLabel : DeviceUsageStatus }}
+              </span>
+            </p>
+          </div>
+          <div class="text-right">
+            <p class="font-bold mb-1">Última Actualización</p>
+            <p class="text-sm">{{ now | date : "medium" }}</p>
+          </div>
+        </div>
+
+        @if (selectedDevice.usageStatus === DeviceUsageStatus.IN_USE &&
+        selectedDevice.trackingNumber) {
+        <div class="tracking-info mt-4">
+          <div class="flex align-items-center">
+            <span class="material-symbols-outlined mr-2">inventory_2</span>
+            <p class="font-bold mb-0">
+              Paquete: #{{ selectedDevice.trackingNumber }}
+            </p>
+          </div>
+          <p class="text-sm text-500 mt-2">
+            El dispositivo está siendo utilizado para monitorear este paquete
+            durante su transporte.
+          </p>
+          <div class="flex align-items-center mt-3">
+            <span class="material-symbols-outlined mr-2">local_shipping</span>
+            <p class="font-bold mb-0">En tránsito</p>
+          </div>
+          <div class="flex align-items-center gap-2 mt-3">
+            <p-button
+              icon="pi pi-map"
+              label="Ver en mapa"
+              styleClass="p-button-sm p-button-outlined"
+            ></p-button>
+            <p-button
+              icon="pi pi-chart-line"
+              label="Ver historial"
+              styleClass="p-button-sm p-button-outlined"
+            ></p-button>
+          </div>
+        </div>
+        } @else {
+        <div class="empty-state p-3 text-center mt-3">
+          <span
+            class="material-symbols-outlined mb-2"
+            style="font-size: 2rem; color: #6c757d"
+            >inventory_2</span
+          >
+          <p>Este dispositivo no está asignado a ningún paquete actualmente</p>
+        </div>
+        }
+      </div>
+
+      <div class="flex justify-content-end">
+        <p-button
+          icon="pi pi-trash"
+          label="Eliminar"
+          styleClass="p-button-danger mr-2"
+          (onClick)="deleteDevice(selectedDevice.id)"
+        ></p-button>
+        <p-button
+          [label]="
+            selectedDevice.status === DeviceStatus.ONLINE
+              ? 'Desconectar'
+              : 'Conectar'
+          "
+          [icon]="
+            selectedDevice.status === DeviceStatus.ONLINE
+              ? 'pi pi-power-off'
+              : 'pi pi-wifi'
+          "
+          [styleClass]="
+            selectedDevice.status === DeviceStatus.ONLINE
+              ? 'p-button-danger mr-2'
+              : 'p-button-success mr-2'
+          "
+          (onClick)="toggleDeviceStatus(selectedDevice.id)"
+        ></p-button>
+      </div>
+      }@else {
+      <div
+        class="flex h-full flex-column align-items-center justify-content-center"
+      >
+        <img src="assets/images/Iot-platform.png" alt="" class="h-5rem" />
+        <p class="mt-3">Seleccione un Dispositivo</p>
+      </div>
+      }
+    </div>
+  </div>
+</div>
+
+<p-dialog
+  [(visible)]="deviceDialog"
+  [style]="{ width: '500px' }"
+  header="Agregar Dispositivo IoT"
+  resizable="true"
+  [modal]="true"
+  class="p-fluid"
+>
+  <ng-template pTemplate="content">
+    <div class="field mb-3">
+      <label for="macAddress">MAC Address</label>
+      <input
+        id="macAddress"
+        type="text"
+        pInputText
+        [(ngModel)]="newDevice.macAddress"
+        [ngModelOptions]="{ standalone: true }"
+        name="macAddress"
+        required
+      />
+    </div>
+    <div class="field">
+      <label>Tipos de sensores</label>
+      <div class="grid mt-2">
+        @for (option of deviceTypeOptions; track option.value) {
+        <div class="col-6 mb-2">
+          <div
+            class="p-3 border-round cursor-pointer sensor-option flex align-items-center"
+            [ngClass]="{ selected: isTypeSelected(option.value) }"
+            (click)="toggleTypeSelection(option.value)"
+          >
+            <span
+              *ngIf="option.label == DeviceType.HUMIDITY_SENSOR"
+              class="material-symbols-outlined mr-2"
+            >
+              dew_point
+            </span>
+            <span
+              *ngIf="option.label == DeviceType.TEMPERATURE_SENSOR"
+              class="material-symbols-outlined mr-2"
+            >
+              device_thermostat
+            </span>
+            {{ option.label }}
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <button type="submit" class="btn btn-primary" pButton (click)="addDevice()">
+      Agregar dispositivo
+    </button>
+  </ng-template>
+</p-dialog>
