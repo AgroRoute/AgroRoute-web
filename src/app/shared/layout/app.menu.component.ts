@@ -15,7 +15,16 @@ export class AppMenuComponent implements OnInit {
     this.model = [
       {
         items: [
-
+          {
+            label: 'Dashboard',
+            icon: 'pi pi-th-large',
+            routerLink: ['/app/dashboard'],
+          },
+          {
+            label: 'Dispositivos IoT',
+            icon: 'pi pi-server',
+            routerLink: ['/app/iot-devices'],
+          },
         ],
       },
       

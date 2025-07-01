@@ -46,6 +46,46 @@
     }
 }
 
+.device-badge {
+  border-radius: var(--border-radius);
+  padding: 0.25em 0.5rem;
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.3px;
+  display: inline-block;
+
+  &.status-ONLINE {
+    background: #C8E6C9;
+    color: #256029;       
+  }
+
+  &.status-OFFLINE {
+    background: #FFCDD2; 
+    color: #C63737;       
+  }
+
+  &.status-IN_USE {
+    background: #D1C4E9; 
+    color: #4527A0;       
+  }
+
+  &.status-AVAILABLE {
+    background: #B3E5FC; 
+    color: #0277BD;       
+  }
+
+  &.status-RESERVED {
+    background: #FFE0B2; 
+    color: #EF6C00;      
+  }
+
+  &.status-OUT_OF_SERVICE {
+    background: #E0E0E0; 
+    color: #616161;       
+  }
+}
+
 
 .red-text {
     color: red;

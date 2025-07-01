@@ -3,13 +3,22 @@ import { AppLayoutComponent } from './shared/layout/app.layout.component';
 import { authGuard } from './security/guards/auth.guard';
 import { LoginComponent } from './security/pages/login/login.component';
 import { RegisterComponent } from './security/pages/register/register.component';
+import { DashboardComponent } from './dashboard/pages/dashboard/dashboard.component';
+import { IotDevicesComponent } from './iot-devices/pages/iot-devices/iot-devices.component';
 
 export const routes: Routes = [
   {
     path: 'app',
     component: AppLayoutComponent,
     children: [
-      
+      {
+        path: 'dashboard',
+        component: DashboardComponent,
+      },
+      {
+        path: 'iot-devices',
+        component: IotDevicesComponent,
+      }
     ],
     canActivate: [authGuard],
   },

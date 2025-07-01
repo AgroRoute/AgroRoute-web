@@ -1,0 +1,275 @@
+<app-loading-spinner [isLoading]="isLoading"></app-loading-spinner>
+<p-confirmDialog [style]="{width: '450px'}" acceptButtonStyleClass="p-button-danger" rejectButtonStyleClass="p-button-text"></p-confirmDialog>
+
+<div class="grid nested-grid full">
+  <div class="col-12 md:col-5">
+    <div class="card h-full">
+      <h4 class="font-bold">Dispositivos IoT</h4>
+      <p>Gestión de dispositivos IoT</p>
+      <p-dataView
+        #dv
+        [value]="iotDevices()"
+        [paginator]="true"
+        [rows]="4"
+        [loading]="isLoading"
+        filterBy="macAddress"
+      >
+        <ng-template pTemplate="header">
+          <div
+            class="grid grid-nogutter flex-column md:flex-row justify-content-between"
+          >
+            <span class="p-input-icon-left mb-2 md:mb-0 w-7">
+              <i class="pi pi-search"></i>
+              <input
+                type="search"
+                pInputText
+                class="w-full"
+                placeholder="Buscar por MAC"
+                (input)="onFilter(dv, $event)"
+              />
+            </span>
+            <p-button
+              label="Agregar"
+              icon="pi pi-plus"
+              (onClick)="openAddDialog()"
+            ></p-button>
+          </div>
+        </ng-template>
+
+        <ng-template let-devices pTemplate="listItem">
+          <div class="grid grid-nogutter mt-2">
+            <div class="col-12">
+              @for (device of devices; track device.id) {
+              <div
+                class="flex flex-row p-3 shadow-1 mb-3 align-items-center hover:surface-100"
+                style="cursor: pointer"
+                (click)="onDeviceSelect({ data: device })"
+              >
+                <div>
+                  <img
+                    src="assets/images/Iot-platform.png"
+                    alt=""
+                    class="h-5rem"
+                  />
+                </div>
+                <div class="ml-3">
+                  <span>#{{ device.id.substring(0, 8) }}</span>
+                  <p class="font-bold mb-1">MAC: {{ device.macAddress }}</p>
+                  <p class="mb-1">
+                    Estado:
+                    <span
+                      [class]="'ml-1 device-badge status-' + device.status"
+                      style="font-size: 0.75rem"
+                      >{{ device.status | enumLabel : DeviceStatusLabel }}
+                    </span>
+                  </p>
+                  <p class="mb-1">
+                    Estado de Uso:
+                    <span
+                      [class]="'ml-1 device-badge status-' + device.usageStatus"
+                      style="font-size: 0.75rem"
+                      >{{
+                        device.usageStatus | enumLabel : DeviceUsageStatusLabel
+                      }}</span
+                    >
+                  </p>
+                </div>
+              </div>
+              }
+            </div>
+          </div>
+        </ng-template>
+      </p-dataView>
+    </div>
+  </div>
+
+  <!-- Parte que muestra la información del dispositivo -->
+  <div class="col-12 md:col-7">
+    <div class="card w-full">
+      @if (selectedDevice) {
+      <!-- Header minimalista -->
+      <div class="flex justify-content-between align-items-center mb-4">
+        <h3 class="font-bold text-2xl">Dispositivo IoT</h3>
+        <span
+          [class]="'device-badge status-' + selectedDevice.status"
+          style="font-size: 1rem; padding: 0.5rem 1rem"
+          >{{ selectedDevice.status | enumLabel : DeviceStatusLabel }}</span
+        >
+      </div>
+
+      <!-- Contenido principal en dos columnas -->
+      <div class="grid">
+        <!-- Columna izquierda: Información del dispositivo -->
+        <div class="col-12 md:col-6">
+          <div class="device-info-card">
+            <h4 class="info-title">Información del Dispositivo</h4>
+            
+            <div class="info-item">
+              <label class="info-label">ID</label>
+              <span class="info-value">#{{ selectedDevice.id }}</span>
+            </div>
+
+            <div class="info-item">
+              <label class="info-label">MAC Address</label>
+              <span class="info-value">{{ selectedDevice.macAddress }}</span>
+            </div>
+
+            <div class="info-item">
+              <label class="info-label">Estado</label>
+              <span [class]="'device-badge status-' + selectedDevice.status">
+                {{ selectedDevice.status | enumLabel : DeviceStatusLabel }}
+              </span>
+            </div>
+
+            <div class="info-item">
+              <label class="info-label">Tipos de Sensores</label>
+              <div class="sensor-types">
+                @for (type of selectedDevice.types; track type) {
+                <span class="sensor-type-badge">
+                  {{ type | enumLabel : DeviceTypeLabel }}
+                </span>
+                }
+              </div>
+            </div>
+
+            <div class="info-item">
+              <label class="info-label">Estado de Uso</label>
+              <span [class]="'device-badge status-' + selectedDevice.usageStatus">
+                {{ selectedDevice.usageStatus | enumLabel : DeviceUsageStatusLabel }}
+              </span>
+            </div>
+
+            <div class="info-item">
+              <label class="info-label">Creado</label>
+              <span class="info-value">{{ selectedDevice.createdAt | date: 'medium' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Columna derecha: Lecturas de sensores -->
+        <div class="col-12 md:col-6">
+          <div class="sensor-readings-card">
+            <h4 class="info-title">Lecturas en Tiempo Real</h4>
+            
+            <div class="sensor-card temperature">
+              <div class="sensor-icon">
+                <span class="material-symbols-outlined">device_thermostat</span>
+              </div>
+              <div class="sensor-info">
+                <p class="sensor-label">Temperatura</p>
+                <p class="sensor-value">
+                  {{ selectedDevice.temperatureValue || "--" }}°C
+                </p>
+              </div>
+            </div>
+
+            <div class="sensor-card humidity">
+              <div class="sensor-icon">
+                <span class="material-symbols-outlined">dew_point</span>
+              </div>
+              <div class="sensor-info">
+                <p class="sensor-label">Humedad</p>
+                <p class="sensor-value">
+                  {{ selectedDevice.humidityValue || "--" }}%
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botones de acción -->
+      <div class="flex justify-content-end mt-4 pt-3 border-top-1 surface-border">
+        <p-button
+          icon="pi pi-trash"
+          label="Eliminar"
+          styleClass="p-button-danger p-button-outlined mr-2"
+          (onClick)="confirmDelete(selectedDevice.id)"
+        ></p-button>
+        <p-button
+          [label]="
+            selectedDevice.status === DeviceStatus.ONLINE
+              ? 'Desconectar'
+              : 'Conectar'
+          "
+          [icon]="
+            selectedDevice.status === DeviceStatus.ONLINE
+              ? 'pi pi-power-off'
+              : 'pi pi-wifi'
+          "
+          [styleClass]="
+            selectedDevice.status === DeviceStatus.ONLINE
+              ? 'p-button-danger'
+              : 'p-button-success'
+          "
+          (onClick)="toggleDeviceStatus(selectedDevice.id)"
+        ></p-button>
+      </div>
+      } @else {
+      <div
+        class="flex h-full flex-column align-items-center justify-content-center"
+      >
+        <img src="assets/images/Iot-platform.png" alt="" class="h-5rem" />
+        <p class="mt-3">Seleccione un Dispositivo</p>
+      </div>
+      }
+    </div>
+  </div>
+</div>
+
+<p-dialog
+  [(visible)]="deviceDialog"
+  [style]="{ width: '500px' }"
+  header="Agregar Dispositivo IoT"
+  resizable="true"
+  [modal]="true"
+  class="p-fluid"
+>
+  <ng-template pTemplate="content">
+    <div class="field mb-3">
+      <label for="macAddress">MAC Address</label>
+      <input
+        id="macAddress"
+        type="text"
+        pInputText
+        [(ngModel)]="newDevice.macAddress"
+        [ngModelOptions]="{ standalone: true }"
+        name="macAddress"
+        required
+      />
+    </div>
+    <div class="field">
+      <label>Tipos de sensores</label>
+      <div class="grid mt-2">
+        @for (option of deviceTypeOptions; track option.value) {
+        <div class="col-6 mb-2">
+          <div
+            class="p-3 border-round cursor-pointer sensor-option flex align-items-center"
+            [ngClass]="{ selected: isTypeSelected(option.value) }"
+            (click)="toggleTypeSelection(option.value)"
+          >
+            <span
+              *ngIf="option.label == DeviceTypeLabel.HUMIDITY_SENSOR"
+              class="material-symbols-outlined mr-2"
+            >
+              dew_point
+            </span>
+            <span
+              *ngIf="option.label == DeviceTypeLabel.TEMPERATURE_SENSOR"
+              class="material-symbols-outlined mr-2"
+            >
+              device_thermostat
+            </span>
+            {{ option.label }}
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <button type="submit" class="btn btn-primary" pButton (click)="addDevice()">
+      Agregar dispositivo
+    </button>
+  </ng-template>
+</p-dialog>
