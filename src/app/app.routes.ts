@@ -5,6 +5,8 @@ import { LoginComponent } from './security/pages/login/login.component';
 import { RegisterComponent } from './security/pages/register/register.component';
 import { DashboardComponent } from './dashboard/pages/dashboard/dashboard.component';
 import { IotDevicesComponent } from './iot-devices/pages/iot-devices/iot-devices.component';
+import { ClientsComponent } from './organization/pages/clients/clients.component';
+import { EmployeesComponent } from './organization/pages/employees/employees.component';
 
 export const routes: Routes = [
   {
@@ -18,6 +20,14 @@ export const routes: Routes = [
       {
         path: 'iot-devices',
         component: IotDevicesComponent,
+      },
+      {
+        path: 'clients',
+        component: ClientsComponent,
+      },
+      {
+        path: 'employees',
+        component: EmployeesComponent
       }
     ],
     canActivate: [authGuard],

@@ -1,0 +1,244 @@
+<app-loading-spinner [isLoading]="isLoading"></app-loading-spinner>
+<p-confirmDialog
+  [style]="{ width: '450px' }"
+  acceptButtonStyleClass="p-button-danger"
+  rejectButtonStyleClass="p-button-text"
+></p-confirmDialog>
+
+<div class="grid nested-grid full">
+  <div class="col-12 md:col-5">
+    <div class="card h-full">
+      <h4 class="font-bold">Clientes</h4>
+      <p>Gestión de Clientes</p>
+      <p-dataView
+        #dv
+        [value]="clients()"
+        [paginator]="true"
+        [rows]="4"
+        [loading]="isLoading"
+        filterBy="firstName"
+      >
+        <ng-template pTemplate="header">
+          <div
+            class="grid grid-nogutter flex-column md:flex-row justify-content-between"
+          >
+            <span class="p-input-icon-left mb-2 md:mb-0 w-7">
+              <i class="pi pi-search"></i>
+              <input
+                type="search"
+                pInputText
+                class="w-full"
+                placeholder="Buscar por nombre"
+                (input)="onFilter(dv, $event)"
+              />
+            </span>
+            <p-button
+              label="Agregar"
+              icon="pi pi-plus"
+              (onClick)="openAddDialog()"
+            ></p-button>
+          </div>
+        </ng-template>
+
+        <ng-template let-clients pTemplate="listItem">
+          <div class="grid grid-nogutter mt-2">
+            <div class="col-12">
+              @for (client of clients; track client.id) {
+              <div
+                class="flex flex-row p-3 shadow-1 mb-3 align-items-center hover:surface-100"
+                style="cursor: pointer"
+                (click)="onClientSelect({ data: client })"
+              >
+                <div>
+                  <img
+                    src="assets/images/box.jpg"
+                    alt="Cliente"
+                    class="h-5rem"
+                  />
+                </div>
+                <div class="ml-3">
+                  <span>#{{ client.id.substring(0, 8) }}</span>
+                  <p class="font-bold mb-1">
+                    {{ client.firstName }} {{ client.lastName }}
+                  </p>
+                  <p class="mb-1">{{ client.email }}</p>
+                </div>
+              </div>
+              }
+            </div>
+          </div>
+        </ng-template>
+      </p-dataView>
+    </div>
+  </div>
+
+  <!-- Parte que muestra la información del Cliente -->
+  <div class="col-12 md:col-7">
+    <div class="card w-full">
+      @if (selectedClient) {
+      <!-- Header minimalista -->
+      <div class="flex justify-content-between align-items-center mb-4">
+        <h3 class="font-bold text-2xl">Detalles del Cliente</h3>
+        <!-- Botones de acción -->
+        <div class="flex justify-content-end">
+          <p-button
+            icon="pi pi-pencil"
+            label="Editar"
+            styleClass="p-button-outlined mr-2"
+            (onClick)="openEditDialog()"
+          ></p-button>
+          <p-button
+            icon="pi pi-envelope"
+            label="Contactar"
+            styleClass="p-button-info p-button-outlined mr-2"
+            (onClick)="contactClient()"
+          ></p-button>
+          <p-button
+            icon="pi pi-trash"
+            label="Eliminar"
+            styleClass="p-button-danger p-button-outlined"
+            (onClick)="confirmDelete(selectedClient.id)"
+          ></p-button>
+        </div>
+      </div>
+
+      <!-- Contenido principal en dos columnas -->
+      <div class="grid">
+        <!-- Columna izquierda: Información del cliente -->
+        <div class="col-12">
+          <div
+            class="device-info-card p-3 border-1 surface-border border-round"
+          >
+            <h4 class="info-title">Información Personal</h4>
+
+            <div class="info-item flex align-items-center mb-3">
+              <label class="info-label font-bold w-4">ID:</label>
+              <span class="info-value">#{{ selectedClient.id }}</span>
+            </div>
+
+            <div class="info-item flex align-items-center mb-3">
+              <label class="info-label font-bold w-4">Nombre Completo:</label>
+              <span class="info-value"
+                >{{ selectedClient.firstName }}
+                {{ selectedClient.lastName }}</span
+              >
+            </div>
+
+            <div class="info-item flex align-items-center mb-3">
+              <label class="info-label font-bold w-4"
+                >Correo Electrónico:</label
+              >
+              <span class="info-value">{{ selectedClient.email }}</span>
+            </div>
+
+            <div class="info-item flex align-items-center mb-3">
+              <label class="info-label font-bold w-4">Teléfono:</label>
+              <span class="info-value">{{ selectedClient.phoneNumber }}</span>
+            </div>
+
+            <div class="info-item flex align-items-center mb-3">
+              <label class="info-label font-bold w-4">Fecha de Registro:</label>
+              <span class="info-value">{{
+                selectedClient.createdAt | dateFormat
+              }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      } @else {
+      <div
+        class="flex h-full flex-column align-items-center justify-content-center"
+      >
+        <img
+          src="assets/images/box.jpg"
+          alt="Icono Cliente"
+          class="h-8rem mb-4"
+        />
+        <h3 class="font-semibold mb-2">No hay cliente seleccionado</h3>
+        <p class="text-color-secondary">
+          Seleccione un cliente de la lista para ver sus detalles
+        </p>
+      </div>
+      }
+    </div>
+  </div>
+</div>
+
+<p-dialog
+  [(visible)]="clientDialog"
+  [style]="{ width: '500px' }"
+  [header]="editMode ? 'Editar Cliente' : 'Agregar Cliente'"
+  resizable="true"
+  [modal]="true"
+  class="p-fluid"
+>
+  <ng-template pTemplate="content">
+    <div class="field mb-3">
+      <label for="firstName">Nombres</label>
+      <input
+        id="firstName"
+        type="text"
+        pInputText
+        [(ngModel)]="newClient.firstName"
+        [ngModelOptions]="{ standalone: true }"
+        name="firstName"
+        required
+      />
+    </div>
+    <div class="field mb-3">
+      <label for="lastName">Apellidos</label>
+      <input
+        id="lastName"
+        type="text"
+        pInputText
+        [(ngModel)]="newClient.lastName"
+        [ngModelOptions]="{ standalone: true }"
+        name="lastName"
+        required
+      />
+    </div>
+    <div class="field mb-3">
+      <label for="email">Email</label>
+      <input
+        id="email"
+        type="email"
+        pInputText
+        [(ngModel)]="newClient.email"
+        [ngModelOptions]="{ standalone: true }"
+        name="email"
+        required
+      />
+    </div>
+    <div class="field mb-3">
+      <label for="phoneNumber">Celular</label>
+      <input
+        id="phoneNumber"
+        type="tel"
+        pInputText
+        [(ngModel)]="newClient.phoneNumber"
+        [ngModelOptions]="{ standalone: true }"
+        name="phoneNumber"
+        required
+      />
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      pRipple
+      type="button"
+      label="Cancelar"
+      icon="pi pi-times"
+      class="p-button-text"
+      (click)="clientDialog = false"
+    ></button>
+    <button
+      pButton
+      pRipple
+      type="submit"
+      [label]="editMode ? 'Guardar Cambios' : 'Agregar Cliente'"
+      icon="pi pi-check"
+      (click)="editMode ? updateClient() : addClient()"
+    ></button>
+  </ng-template>
+</p-dialog>
