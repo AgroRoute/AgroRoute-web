@@ -57,8 +57,6 @@ export class IotDevicesComponent implements OnInit {
   private _messageService = inject(MessageService);
   private _confirmationService = inject(ConfirmationService);
   DeviceStatus = DeviceStatus;
-  DeviceUsageStatus = DeviceUsageStatus;
-  DeviceType = DeviceType;
 
   // Labels para el pipe enumLabel
   DeviceStatusLabel = DeviceStatusLabel;
@@ -75,11 +73,8 @@ export class IotDevicesComponent implements OnInit {
 
   isLoading = true;
   deviceDialog = false;
-  selectedDeviceDialog = false;
   selectedDevice: IotDevice | null = null;
   
-  now = new Date();
-
   ngOnInit(): void {
     this._iotDeviceService.getAll().subscribe({
       next: (data) => {

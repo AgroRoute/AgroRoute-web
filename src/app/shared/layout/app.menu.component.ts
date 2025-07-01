@@ -25,6 +25,16 @@ export class AppMenuComponent implements OnInit {
             icon: 'pi pi-server',
             routerLink: ['/app/iot-devices'],
           },
+          {
+            label: 'Clientes',
+            icon: 'pi pi-users',
+            routerLink: ['/app/clients'],
+          },
+          {
+            label: 'Empleados',
+            icon: 'pi pi-id-card',
+            routerLink: ['/app/employees'],
+          },
         ],
       },
       
