@@ -187,3 +187,131 @@
   color: #6B7280;
   border: 1px solid rgba(107, 114, 128, 0.3);
 }
+
+/* Estilos para el diseño minimalista */
+.device-info-card, .sensor-readings-card {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 1.5rem;
+  height: 100%;
+}
+
+.info-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #2c3e50;
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 0.5rem;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+  gap: 0.25rem;
+}
+
+.info-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-value {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #495057;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.sensor-types {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.sensor-type-badge {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: #3B82F6;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+/* Mejorar las tarjetas de sensores para el diseño minimalista */
+.sensor-readings-card .sensor-card {
+  background-color: white;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.sensor-readings-card .sensor-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.sensor-readings-card .sensor-icon {
+  background-color: rgba(59, 130, 246, 0.1);
+  padding: 0.75rem;
+  border-radius: 8px;
+  margin-right: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px;
+  min-height: 48px;
+}
+
+.sensor-readings-card .temperature .sensor-icon {
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.sensor-readings-card .humidity .sensor-icon {
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+.sensor-readings-card .temperature .material-symbols-outlined {
+  color: #EF4444;
+  font-size: 1.5rem;
+}
+
+.sensor-readings-card .humidity .material-symbols-outlined {
+  color: #3B82F6;
+  font-size: 1.5rem;
+}
+
+.sensor-readings-card .sensor-info {
+  flex-grow: 1;
+}
+
+.sensor-readings-card .sensor-label {
+  margin-bottom: 0.25rem;
+  color: #6c757d;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.sensor-readings-card .sensor-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.sensor-readings-card .temperature .sensor-value {
+  color: #EF4444;
+}
+
+.sensor-readings-card .humidity .sensor-value {
+  color: #3B82F6;
+}

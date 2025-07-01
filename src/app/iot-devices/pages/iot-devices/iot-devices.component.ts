@@ -7,6 +7,9 @@ import {
   DeviceType,
   DeviceStatus,
   DeviceUsageStatus,
+  DeviceStatusLabel,
+  DeviceUsageStatusLabel,
+  DeviceTypeLabel,
 } from '../../models/iot-device';
 import { IotDeviceReq } from '../../models/iot-device-req';
 import { IotDeviceService } from '../../services/iot-device.service';
@@ -21,7 +24,8 @@ import { ToastModule } from 'primeng/toast';
 import { DataViewModule } from 'primeng/dataview';
 import { DividerModule } from 'primeng/divider';
 import { EnumLabelPipe } from '../../../shared/pipes/enum-label.pipe';
-import { MessageService } from 'primeng/api';
+import { MessageService, ConfirmationService } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 @Component({
   selector: 'app-iot-devices',
@@ -42,22 +46,30 @@ import { MessageService } from 'primeng/api';
     DataViewModule,
     DividerModule,
     EnumLabelPipe,
+    ConfirmDialogModule,
   ],
   templateUrl: './iot-devices.component.html',
   styleUrl: './iot-devices.component.css',
+  providers: [ConfirmationService]
 })
 export class IotDevicesComponent implements OnInit {
   private _iotDeviceService = inject(IotDeviceService);
   private _messageService = inject(MessageService);
+  private _confirmationService = inject(ConfirmationService);
   DeviceStatus = DeviceStatus;
   DeviceUsageStatus = DeviceUsageStatus;
   DeviceType = DeviceType;
+
+  // Labels para el pipe enumLabel
+  DeviceStatusLabel = DeviceStatusLabel;
+  DeviceUsageStatusLabel = DeviceUsageStatusLabel;
+  DeviceTypeLabel = DeviceTypeLabel;
 
   iotDevices = signal<IotDevice[]>([]);
   newDevice: IotDeviceReq = { macAddress: '', types: [] };
   deviceTypes = Object.values(DeviceType);
   deviceTypeOptions = Object.keys(DeviceType).map((key) => ({
-    label: DeviceType[key as keyof typeof DeviceType],
+    label: DeviceTypeLabel[key as keyof typeof DeviceType],
     value: key,
   }));
 
@@ -65,15 +77,7 @@ export class IotDevicesComponent implements OnInit {
   deviceDialog = false;
   selectedDeviceDialog = false;
   selectedDevice: IotDevice | null = null;
-  statusOptions = Object.keys(DeviceStatus).map((key) => ({
-    label: DeviceStatus[key as keyof typeof DeviceStatus],
-    value: key,
-  }));
-  usageStatusOptions = Object.keys(DeviceUsageStatus).map((key) => ({
-    label: DeviceUsageStatus[key as keyof typeof DeviceUsageStatus],
-    value: key,
-  }));
-
+  
   now = new Date();
 
   ngOnInit(): void {
@@ -105,12 +109,7 @@ export class IotDevicesComponent implements OnInit {
 
   addDevice(): void {
     this.isLoading = true;
-    const formattedDevice: IotDeviceReq = {
-      macAddress: this.newDevice.macAddress,
-      types: this.newDevice.types.map((t: any) => t.value), // transforma [{label, value}] a [value]
-    };
-
-    this._iotDeviceService.create(formattedDevice).subscribe({
+    this._iotDeviceService.create(this.newDevice).subscribe({
       next: (device) => {
         this.iotDevices.update((devices) => [...devices, device]);
         this.newDevice = { macAddress: '', types: [] };
@@ -135,6 +134,19 @@ export class IotDevicesComponent implements OnInit {
 
   onDeviceSelect(event: any): void {
     this.selectedDevice = event.data;
+  }
+
+  confirmDelete(id: string): void {
+    this._confirmationService.confirm({
+      message: '¿Está seguro que desea eliminar este dispositivo? Esta acción no se puede deshacer.',
+      header: 'Confirmar Eliminación',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Sí, Eliminar',
+      rejectLabel: 'Cancelar',
+      accept: () => {
+        this.deleteDevice(id);
+      }
+    });
   }
 
   deleteDevice(id: string): void {

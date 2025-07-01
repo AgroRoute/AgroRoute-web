@@ -1,13 +1,12 @@
-
 export interface IotDevice {
-    id: string;
-    macAddress: string;
-    status: DeviceStatus;
-    types: Set<DeviceType>;
-    usageStatus: DeviceUsageStatus;
-    humidityValue: number | null;
-    temperatureValue: number | null;
-    trackingNumber: string;
+  id: string;
+  macAddress: string;
+  status: DeviceStatus;
+  types: Set<DeviceType>;
+  usageStatus: DeviceUsageStatus;
+  humidityValue: number | null;
+  temperatureValue: number | null;
+  createdAt: string;
 }
 
 export enum DeviceStatus {
